@@ -6,8 +6,8 @@
       "type": "lldb",
       "request": "launch",
       "args": [],
-      "cwd": "/home/spartan/Projects/CPP/Pilhas",
-      "program": "/home/spartan/Projects/CPP/Pilhas/build/Debug/outDebug"
+      "cwd": "/home/spartan/Projects/CPP/ArvoreHuffman/tests",
+      "program": "/home/spartan/Projects/CPP/ArvoreHuffman/tests/build/Debug/outDebug"
     }
   ]
 }

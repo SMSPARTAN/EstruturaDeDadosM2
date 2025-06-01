@@ -4,8 +4,8 @@ template<typename T>
 class Node {
 public:
   T data;
-  T* left;
-  T* right;
+  Node<T>* left;
+  Node<T>* right;
 
   explicit Node(T data) {
     this->data = data;
