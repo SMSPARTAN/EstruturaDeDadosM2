@@ -38,7 +38,7 @@ private:
     return search(node->right, data);
   }
 
-  void inorder(Node<T>* node) {
+  void inorder(Node<T> *node) {
     if (!node) {
       return;
     }
@@ -48,7 +48,7 @@ private:
     inorder(node->right);
   }
 
-  void preorder(Node<T>* node) {
+  void preorder(Node<T> *node) {
     if (!node) {
       return;
     }
@@ -57,8 +57,8 @@ private:
     preorder(node->left);
     preorder(node->right);
   }
-  
-  void postorder(Node<T>* node) {
+
+  void postorder(Node<T> *node) {
     if (!node) {
       return;
     }
@@ -67,6 +67,7 @@ private:
     postorder(node->right);
     std::cout << node->data << " ";
   }
+
 public:
   explicit HuffmanTree(T rootData) {
     root = new Node<T>(rootData);
@@ -78,24 +79,26 @@ public:
 
   void display(const int &type) {
     switch (type) {
-      case '1':
-        preorder(root);
-        break;
-      case '2':
-        postorder(root);
-        break;
-      case 3:
-        inorder(root);
-        break;
-      default:
-        std::cout << "Invalid display type!\nPlease select either 1 - Preorder | 2 - Postorder | 3 - Inorder\n";
-        break;
+    case 1:
+      preorder(root);
+      break;
+    case 2:
+      postorder(root);
+      break;
+    case 3:
+      inorder(root);
+      break;
+    default:
+      std::cout << "Invalid display type!\nPlease select either 1 - Preorder | 2 - Postorder | 3 - Inorder\n";
+      break;
     }
-    
+
     std::cout << std::endl;
   }
 
   bool search(T data) {
     return search(root, data);
   }
+
+  friend Node<T>;
 };

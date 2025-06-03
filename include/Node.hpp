@@ -1,11 +1,11 @@
 #pragma once
 
-template<typename T>
+template <typename T>
 class Node {
-public:
+private:
   T data;
-  Node<T>* left;
-  Node<T>* right;
+  Node<T> *left;
+  Node<T> *right;
 
   explicit Node(T data) {
     this->data = data;
