@@ -6,10 +6,10 @@
 
 class Huffman {
 private:
-  Node *heap[256];
-  int heapSize;
-  char *codes[256];
-  char buffer[256];
+  Node *heap[256]; // Vetor para organizar os nós por frequência.
+  int heapSize; // Quantidade atual de elementos na heap.
+  char *codes[256]; // Vetor que armazena os códigos binários para cada caractere ASCII.
+  char buffer[256]; // Usado temporariamente para montar os códigos durante a recursão.
 
   void swap(int i, int j) {
     Node *temp = heap[i];
@@ -40,12 +40,14 @@ private:
     }
   }
 
+  // Insere o nó no heap.
   void insertHeap(Node *node) {
     heap[heapSize] = node;
     heapifyUp(heapSize);
     heapSize++;
   }
 
+  // Extrai o menor nó
   Node* extractMin() {
     Node *min = heap[0];
     heap[0] = heap[--heapSize];
@@ -53,6 +55,7 @@ private:
     return min;
   }
 
+  // Cria o código
   void buildCodes(Node *node, int depth) {
     if (!node)
       return;
@@ -81,6 +84,8 @@ public:
     }
   }
 
+
+  // Cria a árvore e à codifica
   void build(const char *text) {
     int freq[256] = {0};
     for (int i = 0; text[i] != '\0'; ++i) {
@@ -103,6 +108,7 @@ public:
     buildCodes(root, 0);
   }
 
+  // Imprime a string codificada
   void printCodes() {
     char output[8192];
     int index = 0;
@@ -117,6 +123,7 @@ public:
     std::cout << output << '\n';
   }
 
+  // Retorna a codificação da string informada como parâmetro.
   const char* encode(const char *text) {
     static char encoded[8192];
     int index = 0;
@@ -130,6 +137,7 @@ public:
     return encoded;
   }
 
+  // Decodifica a string informada como parâmetro
   const char* decode(const char *bits) {
     static char decoded[2048];
     int index = 0;
