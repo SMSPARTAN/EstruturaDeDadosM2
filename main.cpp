@@ -1,4 +1,4 @@
-#include "../include/HuffmanTree.hpp"
+#include "include/HuffmanTree.hpp"
 
 int main() {
   HuffmanTree<int> HTree(50);
@@ -10,7 +10,7 @@ int main() {
   HTree.insert(70);
   HTree.insert(65);
 
-  HTree.display(3);
+  HTree.display(1);
 
   return 0;
 }
