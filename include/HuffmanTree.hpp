@@ -1,104 +1,151 @@
+// Huffman.hpp
 #pragma once
 
 #include "Node.hpp"
 #include <iostream>
 
-template <typename T>
-class HuffmanTree {
+class Huffman {
 private:
-  Node<T> *root;
+  Node *heap[256];
+  int heapSize;
+  char *codes[256];
+  char buffer[256];
 
-  Node<T> *insert(Node<T> *node, T data) {
-    if (!node) {
-      return new Node<T>(data);
-    }
-
-    if (data < node->data) {
-      node->left = insert(node->left, data);
-    } else if (data > node->data) {
-      node->right = insert(node->right, data);
-    }
-
-    return node;
+  void swap(int i, int j) {
+    Node *temp = heap[i];
+    heap[i] = heap[j];
+    heap[j] = temp;
   }
 
-  bool search(Node<T> *node, T data) {
-    if (!node) {
-      return false;
+  void heapifyUp(int index) {
+    while (index > 0 && heap[index]->frequency < heap[(index - 1) / 2]->frequency) {
+      swap(index, (index - 1) / 2);
+      index = (index - 1) / 2;
     }
-
-    if (data == node->data) {
-      return true;
-    }
-
-    if (data < node->data) {
-      return search(node->left, data);
-    }
-
-    return search(node->right, data);
   }
 
-  void inorder(Node<T> *node) {
-    if (!node) {
+  void heapifyDown(int index) {
+    int smallest = index;
+    int left = 2 * index + 1;
+    int right = 2 * index + 2;
+
+    if (left < heapSize && heap[left]->frequency < heap[smallest]->frequency)
+      smallest = left;
+    if (right < heapSize && heap[right]->frequency < heap[smallest]->frequency)
+      smallest = right;
+
+    if (smallest != index) {
+      swap(index, smallest);
+      heapifyDown(smallest);
+    }
+  }
+
+  void insertHeap(Node *node) {
+    heap[heapSize] = node;
+    heapifyUp(heapSize);
+    heapSize++;
+  }
+
+  Node* extractMin() {
+    Node *min = heap[0];
+    heap[0] = heap[--heapSize];
+    heapifyDown(0);
+    return min;
+  }
+
+  void buildCodes(Node *node, int depth) {
+    if (!node)
+      return;
+
+    if (!node->left && !node->right) {
+      char *code = new char[depth + 1];
+      for (int i = 0; i < depth; ++i)
+        code[i] = buffer[i];
+      code[depth] = '\0';
+      codes[(unsigned char)node->data] = code;
       return;
     }
 
-    inorder(node->left);
-    std::cout << node->data << " ";
-    inorder(node->right);
-  }
+    buffer[depth] = '0';
+    buildCodes(node->left, depth + 1);
 
-  void preorder(Node<T> *node) {
-    if (!node) {
-      return;
-    }
-
-    std::cout << node->data << " ";
-    preorder(node->left);
-    preorder(node->right);
-  }
-
-  void postorder(Node<T> *node) {
-    if (!node) {
-      return;
-    }
-
-    postorder(node->left);
-    postorder(node->right);
-    std::cout << node->data << " ";
+    buffer[depth] = '1';
+    buildCodes(node->right, depth + 1);
   }
 
 public:
-  explicit HuffmanTree(T rootData) {
-    root = new Node<T>(rootData);
+  Node *root;
+  Huffman() : heapSize(0), root(nullptr) {
+    for (int i = 0; i < 256; ++i) {
+      codes[i] = nullptr;
+    }
   }
 
-  void insert(T data) {
-    insert(root, data);
-  }
-
-  void display(const int &type) {
-    switch (type) {
-    case 1:
-      preorder(root);
-      break;
-    case 2:
-      postorder(root);
-      break;
-    case 3:
-      inorder(root);
-      break;
-    default:
-      std::cout << "Invalid display type!\nPlease select either 1 - Preorder | 2 - Postorder | 3 - Inorder\n";
-      break;
+  void build(const char *text) {
+    int freq[256] = {0};
+    for (int i = 0; text[i] != '\0'; ++i) {
+      freq[(unsigned char)text[i]]++;
     }
 
-    std::cout << std::endl;
+    for (int i = 0; i < 256; ++i) {
+      if (freq[i] > 0) {
+        insertHeap(new Node((char)i, freq[i]));
+      }
+    }
+
+    while (heapSize > 1) {
+      Node *a = extractMin();
+      Node *b = extractMin();
+      insertHeap(new Node(a->frequency + b->frequency, a, b));
+    }
+
+    root = (heapSize == 1) ? heap[0] : nullptr;
+    buildCodes(root, 0);
   }
 
-  bool search(T data) {
-    return search(root, data);
+  void printCodes() {
+    char output[8192];
+    int index = 0;
+    for (int i = 0; i < 256; ++i) {
+      if (codes[i]) {
+        for (int j = 0; codes[i][j] != '\0'; ++j) {
+          output[index++] = codes[i][j];
+        }
+      }
+    }
+    output[index] = '\0';
+    std::cout << output << '\n';
   }
 
-  friend Node<T>;
+  const char* encode(const char *text) {
+    static char encoded[8192];
+    int index = 0;
+    for (int i = 0; text[i] != '\0'; ++i) {
+      char *code = codes[(unsigned char)text[i]];
+      for (int j = 0; code[j] != '\0'; ++j) {
+        encoded[index++] = code[j];
+      }
+    }
+    encoded[index] = '\0';
+    return encoded;
+  }
+
+  const char* decode(const char *bits) {
+    static char decoded[2048];
+    int index = 0;
+    Node *current = root;
+    for (int i = 0; bits[i] != '\0'; ++i) {
+      if (bits[i] == '0')
+        current = current->left;
+      else
+        current = current->right;
+
+      if (!current->left && !current->right) {
+        decoded[index++] = current->data;
+        current = root;
+      }
+    }
+    decoded[index] = '\0';
+    return decoded;
+  }
 };

@@ -1,16 +1,20 @@
 #include "include/HuffmanTree.hpp"
+#include <format>
 
 int main() {
-  HuffmanTree<int> HTree(50);
+  Huffman huffman;
 
-  HTree.insert(30);
-  HTree.insert(10);
-  HTree.insert(20);
-  HTree.insert(60);
-  HTree.insert(70);
-  HTree.insert(65);
+  const char* str = "Lucas Andre Alexandre";
 
-  HTree.display(1);
+  huffman.build(str);
+
+  const char* encoded = huffman.encode(str);
+
+  huffman.printCodes();
+
+  const char* decoded = huffman.decode(encoded);
+
+  std::cout << std::format("{}\n", decoded);
 
   return 0;
 }

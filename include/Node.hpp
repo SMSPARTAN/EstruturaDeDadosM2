@@ -1,15 +1,24 @@
+// Node.hpp
 #pragma once
 
-template <typename T>
 class Node {
 public:
-  T data;
-  Node<T> *left;
-  Node<T> *right;
+  char data;
+  int frequency;
+  Node *left;
+  Node *right;
 
-  explicit Node(T data) {
+  Node(char data, int frequency) {
     this->data = data;
+    this->frequency = frequency;
     this->left = nullptr;
     this->right = nullptr;
+  }
+
+  Node(int frequency, Node *left, Node *right) {
+    this->data = '\0'; // internal node
+    this->frequency = frequency;
+    this->left = left;
+    this->right = right;
   }
 };
